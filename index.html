@@ -36,7 +36,7 @@ button{cursor:pointer}
 
 /* main */
 .main{position:relative}
-.flora{position:fixed;left:0;right:0;bottom:0;width:100%;height:min(52vh,500px);pointer-events:none;z-index:0;display:block;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 22%);mask-image:linear-gradient(to bottom,transparent 0,#000 22%)}
+.flora{position:fixed;left:0;right:0;bottom:0;width:100%;height:min(36vh,340px);pointer-events:none;z-index:0;display:block;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 22%);mask-image:linear-gradient(to bottom,transparent 0,#000 22%)}
 .center,.bal,.top{position:relative;z-index:1}
 .main{min-height:100%;max-width:480px;margin:0 auto;display:flex;flex-direction:column}
 .top{display:flex;justify-content:flex-end}
@@ -54,6 +54,7 @@ button{cursor:pointer}
 .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
 .btn.danger{background:var(--neg);color:#fff;border-color:var(--neg)}
 .small{border-radius:10px;padding:11px 14px}
+.cashbtn{margin-top:4px;padding:14px 18px}
 
 /* settings */
 .set{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:16px;padding-bottom:max(16px,env(safe-area-inset-bottom,0px))}
@@ -165,6 +166,7 @@ function mainView(){
     <form class="bal" id="balForm">
       <label for="balInput">Баланс сейчас</label>
       <div class="balrow"><input id="balInput" inputmode="decimal" enterkeyhint="done" autocomplete="off" placeholder="0" value="${has?new Intl.NumberFormat('ru-RU').format(S.balance):''}"></div>
+      <button class="btn cashbtn" type="button" data-act="cash">Cashflows</button>
     </form>
   </div>`;
 }
@@ -197,7 +199,6 @@ function listCard(kind){
 function settingsView(){
   return `<div class="set">
     <div class="sethead"><h1>Настройки</h1><button class="btn small" type="button" data-act="back">Готово</button></div>
-    <button class="btn" type="button" data-act="cash">Cashflows</button>
     ${listCard('oneoff')}
     <section class="card"><h2>Текущие расходы в неделю</h2><p class="hint">Еда, транспорт и прочие повседневные траты. В прогнозе они распределяются равномерно по дням.</p>
       <form class="grid" id="weeklyForm">
@@ -225,7 +226,7 @@ function cashView(){
   f.ev.forEach(e=>{rows+=row(dlabel(e.t)+(e.kind==='inc'?', '+pad(e.t.getHours())+':'+pad(e.t.getMinutes()):''),esc(e.name),e.amt,e.run)});
   rows+=row('Утро '+f.to.getDate()+' '+MONTHS[f.to.getMonth()],'Прогноз',null,f.value,'edge');
   return `<div class="set">
-    <div class="sethead"><h1>Cashflows</h1><button class="btn small" type="button" data-act="settings">Назад</button></div>
+    <div class="sethead"><h1>Cashflows</h1><button class="btn small" type="button" data-act="back">Назад</button></div>
     <div class="tw"><table><thead><tr><th>Дата и операция</th><th>Сумма</th><th>Баланс</th></tr></thead><tbody>${rows}</tbody></table></div>
     ${f.daily?`<p class="hint">Баланс в каждой строке уже уменьшен на текущие расходы ${fmt(f.daily)} в день, накопленные к этой дате.</p>`:''}
   </div>`;
