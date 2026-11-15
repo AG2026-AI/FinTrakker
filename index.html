@@ -148,7 +148,8 @@ function flows(){
   ev.sort((a,b)=>dk(a.t)-dk(b.t)||(b.amt>0)-(a.amt>0)||a.t-b.t);
   const daily=(S.weekly||0)/7,start=S.balance||0;
   let sum=0;
-  ev.forEach(e=>{sum+=e.amt;e.run=start+sum-daily*Math.max(0,(Math.max(dk(e.t),from.getTime())-from)/86400000)});
+  /* баланс в строке — на конец дня: все операции этого дня и текущие расходы до полуночи */
+  ev.forEach((e,i)=>{sum+=e.amt;const nx=ev[i+1];e.last=!nx||dk(nx.t)!==dk(e.t);const eod=Math.min(dk(e.t)+86400000,to.getTime());e.run=start+sum-daily*Math.max(0,(eod-from)/86400000)});
   const value=start+sum-daily*Math.max(0,(to-from)/86400000);
   return {from,to,ev,start,daily,value};
 }
@@ -221,14 +222,14 @@ const dlabel=d=>d.getDate()+' '+MONTHS[d.getMonth()]+', '+WD[d.getDay()];
 const sgn=n=>(n>0?'+':'−')+fmt(Math.abs(n));
 function cashView(){
   const f=flows();
-  const row=(date,name,amt,bal,cls)=>`<tr class="${cls||''}"><td><span class="d">${date}</span><span class="n">${name}</span></td><td class="num ${amt>0?'plus':''}">${amt===null?'':sgn(amt)}</td><td class="num${bal<0?' neg':''}">${fmt(bal)}</td></tr>`;
+  const row=(date,name,amt,bal,cls)=>`<tr class="${cls||''}"><td><span class="d">${date}</span><span class="n">${name}</span></td><td class="num ${amt>0?'plus':''}">${amt===null?'':sgn(amt)}</td><td class="num${bal!==null&&bal<0?' neg':''}">${bal===null?'':fmt(bal)}</td></tr>`;
   let rows=row(dlabel(f.from)+', '+pad(f.from.getHours())+':'+pad(f.from.getMinutes()),'Баланс',null,f.start,'edge');
-  f.ev.forEach(e=>{rows+=row(dlabel(e.t)+(e.kind==='inc'?', '+pad(e.t.getHours())+':'+pad(e.t.getMinutes()):''),esc(e.name),e.amt,e.run)});
+  f.ev.forEach(e=>{rows+=row(dlabel(e.t)+(e.kind==='inc'?', '+pad(e.t.getHours())+':'+pad(e.t.getMinutes()):''),esc(e.name),e.amt,e.last?e.run:null)});
   rows+=row('Утро '+f.to.getDate()+' '+MONTHS[f.to.getMonth()],'Прогноз',null,f.value,'edge');
   return `<div class="set">
     <div class="sethead"><h1>Cashflows</h1><button class="btn small" type="button" data-act="back">Назад</button></div>
     <div class="tw"><table><thead><tr><th>Дата и операция</th><th>Сумма</th><th>Баланс</th></tr></thead><tbody>${rows}</tbody></table></div>
-    ${f.daily?`<p class="hint">Баланс в каждой строке уже уменьшен на текущие расходы ${fmt(f.daily)} в день, накопленные к этой дате.</p>`:''}
+    ${f.daily?`<p class="hint">Баланс показан на конец дня: с учётом всех операций этого дня и текущих расходов ${fmt(f.daily)} в день по полночь включительно.</p>`:''}
   </div>`;
 }
 
