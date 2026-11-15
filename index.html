@@ -36,7 +36,7 @@ button{cursor:pointer}
 
 /* main */
 .main{position:relative}
-.flora{position:fixed;left:0;right:0;bottom:0;width:100%;height:min(56vh,540px);pointer-events:none;z-index:0;display:block;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 22%);mask-image:linear-gradient(to bottom,transparent 0,#000 22%)}
+.flora{position:fixed;left:0;right:0;bottom:0;width:100%;top:60%;pointer-events:none;z-index:0;display:block;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 22%);mask-image:linear-gradient(to bottom,transparent 0,#000 22%)}
 .center,.bal,.top{position:relative;z-index:1}
 .main{min-height:100%;max-width:480px;margin:0 auto;display:flex;flex-direction:column}
 .top{display:flex;justify-content:flex-end}
@@ -232,8 +232,9 @@ function cashView(){
   </div>`;
 }
 
+function placeNight(c){const b=document.querySelector('.cashbtn');if(!b)return;const t=Math.round(b.getBoundingClientRect().bottom+16);c.style.top=t+'px';c.style.height=Math.max(120,window.innerHeight-t)+'px'}
 function paintNight(){
-  const c=document.querySelector('canvas.night');if(!c)return;if(paintNight.ro&&paintNight.obs!==c){paintNight.ro.observe(c);paintNight.obs=c}
+  const c=document.querySelector('canvas.night');if(!c)return;placeNight(c);if(paintNight.ro&&paintNight.obs!==c){paintNight.ro.observe(c);paintNight.obs=c}
   const dpr=Math.min(window.devicePixelRatio||1,3),W=c.clientWidth,H=c.clientHeight;if(!W||!H)return;
   c.width=Math.round(W*dpr);c.height=Math.round(H*dpr);
   const g=c.getContext('2d');g.scale(dpr,dpr);g.lineCap='round';
