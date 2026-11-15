@@ -274,6 +274,8 @@ function paintNight(){
   g.globalAlpha=1;
 }
 window.addEventListener('resize',()=>{clearTimeout(paintNight.t);paintNight.t=setTimeout(paintNight,150)});
+/* шрифты и отступы iPhone подгружаются позже — переставляем картину ещё раз */
+window.addEventListener('load',paintNight);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(paintNight);setTimeout(paintNight,400);setTimeout(paintNight,1200);
 if(window.ResizeObserver){paintNight.ro=new ResizeObserver(()=>{const c=document.querySelector('canvas.night');if(c&&(Math.abs(c.width-c.clientWidth*Math.min(window.devicePixelRatio||1,3))>2||Math.abs(c.height-c.clientHeight*Math.min(window.devicePixelRatio||1,3))>2))paintNight()})}
 function render(){document.getElementById('app').innerHTML=view==='main'?mainView():view==='cash'?cashView():settingsView();paintNight()}
 
